@@ -1,3 +1,4 @@
+const worker = new Worker('dummy_worker.js')
 class RealtimeNotificationComponent extends HTMLElement {
     constructor() {
         super()
@@ -11,12 +12,6 @@ class RealtimeNotificationComponent extends HTMLElement {
     createNotificationDivs() {
         this.bar.div.appendChild(this.img)
         this.notifContainer = NotifBlockContainer.create(this.bar.div)
-        this.notifContainer.addBlock("hello")
-        this.notifContainer.addBlock("hello")
-        this.notifContainer.addBlock("hello")
-        this.notifContainer.addBlock("hello")
-        this.notifContainer.addBlock("hello")
-        this.notifContainer.addBlock("hello")
         this.img.style.position = 'relative'
         this.img.style.top = 0
         this.img.style.left = '90%'
@@ -32,6 +27,25 @@ class RealtimeNotificationComponent extends HTMLElement {
         }
         this.notifButton.draw(context,this.image)
         this.img.src = canvas.toDataURL()
+        worker.onmessage = (data)=>{
+            this.addMessage('Hello world')
+        }
+    }
+    addMessage(message) {
+        this.notifContainer.addBlock(message)
+        if(this.notifContainer.div.style.visibility == 'hidden') {
+            var repeat = true
+            if(this.notifButton.n == 0) {
+                repeat = false
+            }
+            this.notifButton.increment()
+            this.animator.startAnimation(repeat)
+        }
+    }
+    startTogglingBar() {
+        this.notifContainer.toggleVisibility()
+        this.render()
+        this.notifButton.reset()
     }
     connectedCallback() {
         this.image = new Image()
@@ -40,12 +54,7 @@ class RealtimeNotificationComponent extends HTMLElement {
             this.render()
         }
         this.img.onmousedown = (event) => {
-            var repeat = true
-            if(this.notifButton.n == 0) {
-                repeat = false
-            }
-            this.notifButton.increment()
-            this.animator.startAnimation(repeat)
+            this.animator.startAnimation(false,this.startTogglingBar.bind(this))
         }
     }
 }
@@ -73,6 +82,9 @@ class NotiticationButton {
         this.w = w
         this.h = h
         this.state = new State()
+        this.n = 0
+    }
+    reset() {
         this.n = 0
     }
     draw(context,image) {
@@ -114,6 +126,10 @@ class State {
         this.dir = 0
         console.log('init')
     }
+    reset() {
+        this.dir = 0
+        this.scale = 0
+    }
     update() {
         this.scale += this.dir*0.1
         console.log(this.scale)
@@ -139,7 +155,7 @@ class Animator {
         this.component = component
         this.animated = false
     }
-    startAnimation(repeat) {
+    startAnimation(repeat,cb) {
         if(!this.animated) {
             this.animated = true
             const notifButton = this.component.notifButton
@@ -153,6 +169,11 @@ class Animator {
                     clearInterval(interval)
                     if(repeat) {
                         this.startAnimation(false)
+                    }
+                    else {
+                        if(cb) {
+                            cb()
+                        }
                     }
                 }
             },50)
@@ -186,6 +207,11 @@ class NotifBlockContainer {
         this.blocks = []
         this.div = document.createElement('div')
         this.notifDiv = document.createElement('div')
+        this.visibility = 'hidden'
+    }
+    toggleVisibility() {
+        this.visibility = this.visibility == 'hidden'?'visible':'hidden'
+        this.div.style.visibility = this.visibility
     }
     createStyle() {
         this.div.style.width = `${window.innerWidth/4}px`
@@ -201,6 +227,7 @@ class NotifBlockContainer {
         this.notifDiv.style.overflow = 'scroll'
         this.notifDiv.style.boxShadow = '2px 1px 1px gray'
         this.notifDiv.style.background = '#E0E0E0'
+        this.div.style.visibility = this.visibility
         this.div.appendChild(this.notifDiv)
     }
     addBlock(message) {
