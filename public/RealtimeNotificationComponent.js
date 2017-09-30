@@ -4,15 +4,23 @@ class RealtimeNotificationComponent extends HTMLElement {
         const shadow = this.attachShadow({mode:'open'})
         this.img = document.createElement('img')
         this.animator = new Animator(this)
-        shadow.appendChild(this.img)
-        this.notifContainer = NotifBlockContainer.create(shadow)
+        this.bar = NotificationBar.create(shadow)
+        shadow.appendChild(this.bar.div)
+        this.createNotificationDivs()
+    }
+    createNotificationDivs() {
+        this.bar.div.appendChild(this.img)
+        this.notifContainer = NotifBlockContainer.create(this.bar.div)
         this.notifContainer.addBlock("hello")
         this.notifContainer.addBlock("hello")
         this.notifContainer.addBlock("hello")
         this.notifContainer.addBlock("hello")
         this.notifContainer.addBlock("hello")
         this.notifContainer.addBlock("hello")
-        shadow.appendChild(this.notifContainer.div)
+        this.img.style.position = 'relative'
+        this.img.style.top = 0
+        this.img.style.left = '90%'
+        // this.bar.div.appendChild(this.notifContainer.div)
     }
     render() {
         const canvas = document.createElement('canvas')
@@ -39,6 +47,25 @@ class RealtimeNotificationComponent extends HTMLElement {
             this.notifButton.increment()
             this.animator.startAnimation(repeat)
         }
+    }
+}
+class NotificationBar {
+    constructor() {
+        this.div = document.createElement('div')
+    }
+    createStyle() {
+        this.div.style.position = 'absolute'
+        this.div.style.top = '0px'
+        this.div.style.left = '0px'
+        this.div.style.width = '100%'
+        this.div.style.height = `${window.innerHeight/10}px`
+        this.div.style.background = '#E0E0E0'
+    }
+    static create(parent) {
+        const bar = new NotificationBar()
+        bar.createStyle()
+        parent.appendChild(bar.div)
+        return bar
     }
 }
 class NotiticationButton {
@@ -138,12 +165,12 @@ class NotifBlock {
         this.div = document.createElement('div')
     }
     createStyle() {
-        this.div.style.width = '70%'
-        this.div.style.height = '20%'
+        this.div.style.width = '90%'
         this.div.style.textAlign = 'center'
-        this.div.style.margin = '15%'
-        this.div.style.borderRadius = '5px'
-        this.div.style.paddingTop = '20%'
+        this.div.style.margin = '5%'
+        this.div.style.borderRadius = '10px'
+        this.div.style.paddingTop = '5%'
+        this.div.style.paddingBottom = '5%'
         this.div.style.fontSize = '30px'
         this.div.style.background = 'white'
         this.div.innerHTML = this.message
@@ -172,7 +199,8 @@ class NotifBlockContainer {
         this.notifDiv.style.position = 'relative'
         this.notifDiv.style.top = '1%'
         this.notifDiv.style.overflow = 'scroll'
-        this.notifDiv.style.background = '#BDBDBD'
+        this.notifDiv.style.boxShadow = '2px 1px 1px gray'
+        this.notifDiv.style.background = '#E0E0E0'
         this.div.appendChild(this.notifDiv)
     }
     addBlock(message) {
@@ -191,11 +219,11 @@ class ArrowDiv {
     }
     createStyle() {
         this.div.style.position = 'relative'
-        this.div.style.left = '50%'
+        this.div.style.left = '77%'
         this.div.style.top = '0%'
         this.div.style.width = 0
         this.div.style.height = 0
-        this.div.style.borderBottom = `${window.innerWidth/80}px solid #BDBDBD`
+        this.div.style.borderBottom = `${window.innerWidth/80}px solid #E0E0E0`
         this.div.style.borderLeft = `${window.innerWidth/80}px solid transparent`
         this.div.style.borderRight = `${window.innerWidth/80}px solid transparent`
     }
