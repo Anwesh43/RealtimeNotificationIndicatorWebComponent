@@ -5,6 +5,9 @@ class RealtimeNotificationComponent extends HTMLElement {
         this.img = document.createElement('img')
         this.animator = new Animator(this)
         shadow.appendChild(this.img)
+        ArrowDiv.create(shadow)
+        this.notifContainer = new NotifBlockContainer()
+        shadow.appendChild(this.notifContainer.div)
     }
     render() {
         const canvas = document.createElement('canvas')
@@ -122,6 +125,63 @@ class Animator {
                 }
             },50)
         }
+    }
+}
+class NotifBlock {
+    constructor(message) {
+        this.message = message
+        this.div = document.createElement('div')
+    }
+    createStyle() {
+        this.div.style.width = '100%'
+        this.div.style.height = '25%'
+        this.div.style.marginLeft = '15%'
+        this.div.style.marginRight = '15%'
+        this.div.style.background = 'white'
+        this.div.innerHTML = this.message
+    }
+    static createBlock(message,parent) {
+        const notifBlock = new NotifBlock(message)
+        notifBlock.createStyle()
+        parent.appendChild(notifBlock.div)
+    }
+}
+class NotifBlockContainer {
+    constructor() {
+        this.blocks = []
+        this.div = document.createElement('div')
+    }
+    createStyle() {
+        this.div.style.width = `${window.innerWidth/4}px`
+        this.div.style.height = `${window.innerHeight/2}px`
+        this.div.style.overflow = 'scroll'
+        this.div.style.background = 'gray'
+        this.div.style.position = 'absolute'
+        this.div.style.left = `${window.innerWidth*.75}px`
+        this.div.style.top = '90%'
+    }
+    addBlock(message) {
+        NotifBlock.createBlock(message,this.div)
+    }
+}
+class ArrowDiv {
+    constructor() {
+        this.div = document.createElement('div')
+    }
+    createStyle() {
+        this.div.style.position = 'absolute'
+        this.div.style.left = '95%'
+        this.div.style.top = '10%'
+        this.div.style.width = 0
+        this.div.style.height = 0
+        this.div.style.borderBottom = `${window.innerWidth/40}px solid gray`
+        this.div.style.borderLeft = `${window.innerWidth/40}px solid transparent`
+        this.div.style.borderRight = `${window.innerWidth/40}px solid transparent`
+    }
+    static create(parent) {
+        const arrowDiv = new ArrowDiv()
+        arrowDiv.createStyle()
+        parent.appendChild(arrowDiv.div)
     }
 }
 customElements.define('realtime-notification-bar',RealtimeNotificationComponent)
