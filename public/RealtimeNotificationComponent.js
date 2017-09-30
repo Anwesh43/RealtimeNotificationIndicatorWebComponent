@@ -5,8 +5,13 @@ class RealtimeNotificationComponent extends HTMLElement {
         this.img = document.createElement('img')
         this.animator = new Animator(this)
         shadow.appendChild(this.img)
-        ArrowDiv.create(shadow)
-        this.notifContainer = new NotifBlockContainer()
+        this.notifContainer = NotifBlockContainer.create(shadow)
+        this.notifContainer.addBlock("hello")
+        this.notifContainer.addBlock("hello")
+        this.notifContainer.addBlock("hello")
+        this.notifContainer.addBlock("hello")
+        this.notifContainer.addBlock("hello")
+        this.notifContainer.addBlock("hello")
         shadow.appendChild(this.notifContainer.div)
     }
     render() {
@@ -133,10 +138,13 @@ class NotifBlock {
         this.div = document.createElement('div')
     }
     createStyle() {
-        this.div.style.width = '100%'
-        this.div.style.height = '25%'
-        this.div.style.marginLeft = '15%'
-        this.div.style.marginRight = '15%'
+        this.div.style.width = '70%'
+        this.div.style.height = '20%'
+        this.div.style.textAlign = 'center'
+        this.div.style.margin = '15%'
+        this.div.style.borderRadius = '5px'
+        this.div.style.paddingTop = '20%'
+        this.div.style.fontSize = '30px'
         this.div.style.background = 'white'
         this.div.innerHTML = this.message
     }
@@ -150,18 +158,31 @@ class NotifBlockContainer {
     constructor() {
         this.blocks = []
         this.div = document.createElement('div')
+        this.notifDiv = document.createElement('div')
     }
     createStyle() {
         this.div.style.width = `${window.innerWidth/4}px`
-        this.div.style.height = `${window.innerHeight/2}px`
-        this.div.style.overflow = 'scroll'
-        this.div.style.background = 'gray'
-        this.div.style.position = 'absolute'
-        this.div.style.left = `${window.innerWidth*.75}px`
-        this.div.style.top = '90%'
+        this.div.style.height = `${2*window.innerHeight/3}px`
+        this.div.style.position = 'relative'
+        this.div.style.left = `${window.innerWidth*.72}px`
+        this.div.style.top = '10%'
+        ArrowDiv.create(this.div)
+        this.notifDiv.style.width = '100%'
+        this.notifDiv.style.height = '99%'
+        this.notifDiv.style.position = 'relative'
+        this.notifDiv.style.top = '1%'
+        this.notifDiv.style.overflow = 'scroll'
+        this.notifDiv.style.background = '#BDBDBD'
+        this.div.appendChild(this.notifDiv)
     }
     addBlock(message) {
-        NotifBlock.createBlock(message,this.div)
+        NotifBlock.createBlock(message,this.notifDiv)
+    }
+    static create(parent) {
+        const container = new NotifBlockContainer()
+        container.createStyle()
+        parent.appendChild(container.div)
+        return container
     }
 }
 class ArrowDiv {
@@ -169,14 +190,14 @@ class ArrowDiv {
         this.div = document.createElement('div')
     }
     createStyle() {
-        this.div.style.position = 'absolute'
-        this.div.style.left = '95%'
-        this.div.style.top = '10%'
+        this.div.style.position = 'relative'
+        this.div.style.left = '50%'
+        this.div.style.top = '0%'
         this.div.style.width = 0
         this.div.style.height = 0
-        this.div.style.borderBottom = `${window.innerWidth/40}px solid gray`
-        this.div.style.borderLeft = `${window.innerWidth/40}px solid transparent`
-        this.div.style.borderRight = `${window.innerWidth/40}px solid transparent`
+        this.div.style.borderBottom = `${window.innerWidth/80}px solid #BDBDBD`
+        this.div.style.borderLeft = `${window.innerWidth/80}px solid transparent`
+        this.div.style.borderRight = `${window.innerWidth/80}px solid transparent`
     }
     static create(parent) {
         const arrowDiv = new ArrowDiv()
