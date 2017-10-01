@@ -1,4 +1,3 @@
-const worker = new Worker('dummy_worker.js')
 class RealtimeNotificationComponent extends HTMLElement {
     constructor() {
         super()
@@ -16,6 +15,11 @@ class RealtimeNotificationComponent extends HTMLElement {
         this.img.style.top = 0
         this.img.style.left = '90%'
         // this.bar.div.appendChild(this.notifContainer.div)
+        const socket = io.connect('/notification_room')
+        socket.emit('notif_client')
+        socket.on('show_notif',(data)=>{
+            this.addMessage(data.message)
+        })
     }
     render() {
         const canvas = document.createElement('canvas')
@@ -27,9 +31,6 @@ class RealtimeNotificationComponent extends HTMLElement {
         }
         this.notifButton.draw(context,this.image)
         this.img.src = canvas.toDataURL()
-        worker.onmessage = (data)=>{
-            this.addMessage('Hello world')
-        }
     }
     addMessage(message) {
         this.notifContainer.addBlock(message)
@@ -86,6 +87,7 @@ class NotiticationButton {
     }
     reset() {
         this.n = 0
+        this.state = new State()
     }
     draw(context,image) {
         const n = this.n-1 + (this.state.dir+1)/2
